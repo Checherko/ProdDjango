@@ -3,10 +3,7 @@ version: '3.8'
 services:
   web:
     build: .
-    command: >
-      sh -c "python /app/mysite/manage.py migrate && 
-             python /app/mysite/manage.py collectstatic --noinput && 
-             gunicorn mysite.wsgi:application --bind 0.0.0.0:8000 --chdir /app/mysite"
+    command: gunicorn mysite.wsgi:application --bind 0.0.0.0:8000 --chdir /app/mysite
     volumes:
       - .:/app
       - static_volume:/app/static/
