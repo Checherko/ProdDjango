@@ -34,8 +34,19 @@ RUN pip install --no-cache-dir celery==5.3.4  # Убедитесь, что ве�
 # Copy the rest of the application
 COPY . /app/
 
-# Collect static files (commented out for development)
-# RUN python /app/mysite/manage.py collectstatic --noinput
+# Run migrations and collect static files
+RUN python /app/mysite/manage.py migrate --noinput
+
+# Copy fixtures if they exist
+COPY --chown=app:app mysite/fixtures/ /app/mysite/fixtures/
+
+# Load fixtures if they exist
+RUN if [ -f "/app/mysite/fixtures/fixtures.json" ]; then \
+    python /app/mysite/manage.py loaddata /app/mysite/fixtures/fixtures.json; \
+    fi
+
+# Collect static files
+RUN python /app/mysite/manage.py collectstatic --noinput
 
 # Expose the port the app runs on
 EXPOSE 8000
