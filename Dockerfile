@@ -45,15 +45,38 @@ ENV DJANGO_SETTINGS_MODULE=mysite.settings
 RUN pip install --no-cache-dir psycopg2-binary
 
 # Create entrypoint script
-RUN echo '#!/bin/bash\n\
-# Wait for PostgreSQL to be ready\nuntil PGPASSWORD=$POSTGRES_PASSWORD psql -h "$DB_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "\q" >/dev/null 2>&1 ; do\n  echo "Waiting for PostgreSQL to be ready..."\n  sleep 1\ndone\n\n# Change to the Django project directory\ncd /app/mysite\n\n# Run migrations\necho "Running migrations..."\npython manage.py migrate --noinput\n\n# Collect static files\necho "Collecting static files..."\npython manage.py collectstatic --noinput\n\n# Create superuser if it doesn\'t exist\necho "Creating superuser if needed..."\necho "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username=\'admin\').exists() or User.objects.create_superuser(\'admin\', \'admin@example.com\', \'admin\')" | python manage.py shell\n\n# Execute the CMD\nexec "$@"' > /app/entrypoint.sh && \
-    chmod +x /app/entrypoint.sh
+RUN cat > /app/entrypoint.sh << 'EOF'
+#!/bin/bash
+set -e
 
-# Set the entrypoint
+echo "Waiting for PostgreSQL to be ready..."
+until PGPASSWORD="$POSTGRES_PASSWORD" psql -h "$DB_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "\q" >/dev/null 2>&1 ; do
+  echo "PostgreSQL is unavailable - sleeping"
+  sleep 1
+done
+
+cd /app/mysite
+
+echo "Running migrations..."
+python manage.py migrate --noinput
+
+echo "Collecting static files..."
+python manage.py collectstatic --noinput
+
+echo "Creating superuser if needed..."
+python manage.py shell << 'PYCODE'
+from django.contrib.auth import get_user_model
+User = get_user_model()
+if not User.objects.filter(username='admin').exists():
+    User.objects.create_superuser('admin', 'admin@example.com', 'admin')
+PYCODE
+
+exec "$@"
+EOF
+
+RUN chmod +x /app/entrypoint.sh
+
 ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "mysite.wsgi:application", "--chdir", "/app/mysite"]
 
-# Default command (can be overridden)
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "mysite.wsgi:application"]
-
-# Expose the port the app runs on
 EXPOSE 8000
