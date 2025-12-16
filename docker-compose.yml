@@ -2,8 +2,10 @@ version: '3.8'
 
 services:
   web:
-    build: .
-    command: gunicorn mysite.wsgi:application --bind 0.0.0.0:8000 --chdir /app/mysite
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app/mysite
     volumes:
       - .:/app
       - static_volume:/app/static/
