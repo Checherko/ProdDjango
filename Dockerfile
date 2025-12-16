@@ -48,8 +48,7 @@ RUN pip install --no-cache-dir psycopg2-binary
 WORKDIR /app
 
 # Create entrypoint script
-RUN cat > /app/entrypoint.sh << 'EOF'
-#!/bin/bash
+RUN echo '#!/bin/bash
 set -e
 
 echo "Waiting for PostgreSQL to be ready..."
@@ -67,20 +66,19 @@ echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
 echo "Creating superuser if needed..."
-python manage.py shell << 'PYCODE'
+python manage.py shell << "PYCODE"
 from django.contrib.auth import get_user_model
 User = get_user_model()
-if not User.objects.filter(username='admin').exists():
-    User.objects.create_superuser('admin', 'admin@example.com', 'admin')
+if not User.objects.filter(username="admin").exists():
+    User.objects.create_superuser("admin", "admin@example.com", "admin")
 PYCODE
 
 echo "Starting Gunicorn..."
-exec "$@"
-EOF
+exec "$@"' > /app/entrypoint.sh
 
-RUN chmod +x /docker-entrypoint.d/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-ENTRYPOINT ["/docker-entrypoint.d/entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "mysite.wsgi:application", "--chdir", "/app/mysite"]
 
 EXPOSE 8000
