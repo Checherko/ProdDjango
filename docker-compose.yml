@@ -32,7 +32,7 @@ services:
 
   celery:
     build: .
-    command: celery -A mysite worker --loglevel=info
+    command: python -m celery -A mysite worker --loglevel=info
     volumes:
       - .:/app
     depends_on:
@@ -45,7 +45,7 @@ services:
 
   celery-beat:
     build: .
-    command: celery -A mysite beat --loglevel=info
+    command: python -m celery -A mysite beat --loglevel=info
     volumes:
       - .:/app
     depends_on:

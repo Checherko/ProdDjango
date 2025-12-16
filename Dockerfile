@@ -27,6 +27,9 @@ COPY requirements.txt .
 # Install project dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install additional dependencies
+RUN pip install --no-cache-dir celery==5.3.4  # Убедитесь, что версия совместима с вашим проектом
+
 # Copy the rest of the application
 # Copy the rest of the application
 COPY . /app/
