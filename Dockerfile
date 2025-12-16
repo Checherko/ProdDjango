@@ -38,7 +38,7 @@ COPY . /app/
 RUN python /app/mysite/manage.py migrate --noinput
 
 # Copy fixtures if they exist
-COPY --chown=app:app mysite/fixtures/ /app/mysite/fixtures/
+#COPY --chown=app:app mysite/fixtures/ /app/mysite/fixtures/
 
 # Load fixtures if they exist
 RUN if [ -f "/app/mysite/fixtures/fixtures.json" ]; then \
