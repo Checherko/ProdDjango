@@ -18,10 +18,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip install --no-cache-dir pipenv
 
 # Copy Pipfile and requirements.txt
-COPY Pipfile* requirements.txt ./
+COPY requirements.txt .
 
 # Install project dependencies
-RUN pipenv install --system --deploy --ignore-pipfile
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application
 COPY . .
