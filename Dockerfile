@@ -34,19 +34,23 @@ RUN pip install --no-cache-dir celery==5.3.4  # Убедитесь, что ве�
 # Copy the rest of the application
 COPY . /app/
 
-# Run migrations and collect static files
+# Create directory for static files
+RUN mkdir -p /app/static
+
+# Set environment variable for Django settings
+ENV DJANGO_SETTINGS_MODULE=mysite.settings
+
+# Install any additional requirements
+RUN pip install --no-cache-dir psycopg2-binary
+
+# Run migrations
 RUN python /app/mysite/manage.py migrate --noinput
-
-# Copy fixtures if they exist
-#COPY --chown=app:app mysite/fixtures/ /app/mysite/fixtures/
-
-# Load fixtures if they exist
-RUN if [ -f "/app/mysite/fixtures/fixtures.json" ]; then \
-    python /app/mysite/manage.py loaddata /app/mysite/fixtures/fixtures.json; \
-    fi
 
 # Collect static files
 RUN python /app/mysite/manage.py collectstatic --noinput
+
+# Create superuser if it doesn't exist (optional)
+RUN echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='admin').exists() or User.objects.create_superuser('admin', 'admin@example.com', 'admin')" | python /app/mysite/manage.py shell
 
 # Expose the port the app runs on
 EXPOSE 8000

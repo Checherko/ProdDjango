@@ -26,7 +26,13 @@ SECRET_KEY = 'django-insecure-hvxn%qq=gyw^4*o2lo1#bw0=wh#ux9s8h!=@c608arf_gz3+^7
 # SECURITY WARNING: don't run with debug turned on in production!
 import os
 
-DEBUG = os.environ.get('DJANGO_DEBUG', '0') == '1'
+# Debug settings
+DEBUG = os.environ.get('DJANGO_DEBUG', '1') == '1'  # Default to True for development
+
+# Logging configuration
+if DEBUG:
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
 
 ALLOWED_HOSTS = ['5.129.207.247', 'localhost', '127.0.0.1', '*']
 
@@ -103,8 +109,12 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_DB', 'postgres'),
+        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'supersecretpassword123'),
+        'HOST': os.environ.get('DB_HOST', 'db'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
