@@ -8,8 +8,8 @@ services:
     working_dir: /app/mysite
     volumes:
       - .:/app
-      - static_volume:/app/static/
-      - media_volume:/app/uploads/
+      - static_volume:/app/static
+      - media_volume:/app/uploads
     ports:
       - "80:8000"
     environment:

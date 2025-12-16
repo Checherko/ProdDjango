@@ -44,6 +44,9 @@ ENV DJANGO_SETTINGS_MODULE=mysite.settings
 # Install any additional requirements
 RUN pip install --no-cache-dir psycopg2-binary
 
+# Set working directory
+WORKDIR /app
+
 # Create entrypoint script
 RUN cat > /app/entrypoint.sh << 'EOF'
 #!/bin/bash
@@ -71,12 +74,13 @@ if not User.objects.filter(username='admin').exists():
     User.objects.create_superuser('admin', 'admin@example.com', 'admin')
 PYCODE
 
+echo "Starting Gunicorn..."
 exec "$@"
 EOF
 
-RUN chmod +x /app/entrypoint.sh
+RUN chmod +x /docker-entrypoint.d/entrypoint.sh
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["/docker-entrypoint.d/entrypoint.sh"]
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "mysite.wsgi:application", "--chdir", "/app/mysite"]
 
 EXPOSE 8000
