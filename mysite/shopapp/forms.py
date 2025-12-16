@@ -10,13 +10,9 @@ class ProductForm(forms.ModelForm):
         fields = "name", "price", "description", "discount", "preview"
 
     images = forms.ImageField(
-        widget=ClearableFileInput(),
+        widget=forms.FileInput(attrs={'multiple': True}),
         required=False,
     )
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['images'].widget.attrs.update({'multiple': True})
 
 
 class CSVImportForm(forms.Form):
