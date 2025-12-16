@@ -3,15 +3,11 @@ version: '3.8'
 services:
   web:
     build: .
-    command: gunicorn --bind 0.0.0.0:8000 mysite.wsgi:application
+    command: gunicorn mysite.wsgi:application --bind 0.0.0.0:8000 --chdir /app/mysite
     volumes:
       - .:/app
-      - static_volume:/app/static
-      - media_volume:/app/media
     ports:
-      - "8000:8000"
-    env_file:
-      - .env
+      - "80:8000"
     environment:
       - DJANGO_DEBUG=1
     restart: always
@@ -19,44 +15,13 @@ services:
       - db
 
   db:
-    image: postgres:13
+    image: postgres:15
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-
-  redis:
-    image: redis:alpine
-
-  celery:
-    build: .
-    command: python -m celery -A mysite worker --loglevel=info
-    volumes:
-      - .:/app
-    depends_on:
-      - redis
-      - db
-    environment:
-      - DJANGO_DEBUG=1
-    env_file:
-      - .env
-
-  celery-beat:
-    build: .
-    command: python -m celery -A mysite beat --loglevel=info
-    volumes:
-      - .:/app
-    depends_on:
-      - redis
-      - db
-    environment:
-      - DJANGO_DEBUG=1
-    env_file:
-      - .env
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=supersecretpassword123
 
 volumes:
   postgres_data:
-  static_volume:
-  media_volume:
