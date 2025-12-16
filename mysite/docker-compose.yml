@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   web:
-    build: .
+    build: ..
     command: gunicorn --bind 0.0.0.0:8000 mysite.wsgi:application
     volumes:
       - .:/app
@@ -31,7 +31,7 @@ services:
     image: redis:alpine
 
   celery:
-    build: .
+    build: ..
     command: celery -A mysite worker --loglevel=info
     volumes:
       - .:/app
@@ -44,7 +44,7 @@ services:
       - .env
 
   celery-beat:
-    build: .
+    build: ..
     command: celery -A mysite beat --loglevel=info
     volumes:
       - .:/app
