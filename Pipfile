@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+asgiref = "==3.6.0"
+django-debug-toolbar = "==4.0.0"
+django-filter = "==22.1"
+djangorestframework = "==3.14.0"
+pillow = "==9.4.0"
+pytz = "==2022.7.1"
+sqlparse = "==0.4.2"
+django = "*"
+gunicorn = "*"
+psycopg2-binary = "*"
+
+[dev-packages]
+pytest = "*"
+
+[requires]
+python_version = "3.11"
+python_full_version = "3.11.9"
