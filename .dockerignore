@@ -34,16 +34,16 @@ ENV/
 .DS_Store
 
 # Project specific
-mysite/Pipfile
-mysite/Pipfile.lock
+Pipfile
+Pipfile.lock
 .env
 *.log
 media/
 staticfiles/
 
 # Docker
-mysite/Dockerfile
-mysite/docker-compose.yml
+Dockerfile
+docker-compose.yml
 .dockerignore
 
 # Database
